@@ -61,8 +61,8 @@ main {
     text-align: center;
 
     border: 1px dashed black;
-    border-radius: 12.5px;
+    border-radius: 6px;
     height: 25px;
-    padding: 0 5px;
+    padding: 0 6px;
     margin: 0;
 }
