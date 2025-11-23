@@ -7,18 +7,60 @@
         <link rel="stylesheet" href="styles.css">
         <title>Untickable</title>
     </head>
-    
+
     <body>
         <main>
-            <div class="counter__root">
-                <p class="counter__text">You failed to tick <span id="counter">0</span> times.</p>
+            <div class="header">
+                <div class="stats__group">
+                    <div class="stat">
+                        <span class="stat__label">Session</span>
+                        <span class="stat__value" id="counter">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat__label">Lifetime</span>
+                        <span class="stat__value" id="lifetime-counter">0</span>
+                    </div>
+                </div>
+                <div class="currency__root">
+                    <p class="currency__text"><span id="frustration">0</span> Fr</p>
+                    <p class="multiplier__text">(<span id="multiplier">1</span>x per fail)</p>
+                </div>
+                <div class="reset__root">
+                  <button id="reset-btn" class="reset-btn">Reset</button>
+                  <button id="reset-all-btn" class="reset-btn reset-btn--danger">Reset All</button>
+                </div>
             </div>
-            <div class="play__root">
-                <input id="check" type="checkbox">
+
+            <div class="game__container">
+                <div class="play__root">
+                    <div id="checkbox-container">
+                        <input id="check" type="checkbox">
+                        <span id="check-label" class="label-right">Unsubscribe from all emails</span>
+                    </div>
+                    <div id="particles"></div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="shop__root">
+                        <h2 class="shop__title">Upgrade Shop</h2>
+                        <p class="shop__subtitle">Make it harder. Earn more.</p>
+                        <div class="shop__list" id="shop-list">
+                            <!-- Upgrades populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="chat__root">
+                        <div class="chat__header">Commentary</div>
+                        <div class="chat__messages" id="chat-messages">
+                            <!-- Messages populated by JS -->
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div class="credits__root">
                 <p class="credits__subroot">
-                    Florian Douay ©
+                    Florian Douay
                 </p>
             </div>
         </main>
