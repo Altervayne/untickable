@@ -456,6 +456,23 @@ main {
    background: #444;
 }
 
+.shop-badge {
+   display: none;
+   background: #4a4;
+   color: white;
+   font-size: 0.7rem;
+   font-weight: bold;
+   padding: 0.1rem 0.4rem;
+   border-radius: 10px;
+   margin-left: 0.3rem;
+}
+
+.shop-badge.has-purchases {
+   display: inline;
+   vertical-align: center;
+   text-align: center;
+}
+
 /* Shop close button - hidden on desktop */
 .shop-close {
    display: none;
@@ -525,7 +542,7 @@ main {
       flex-direction: column;
    }
 
-   /* Reorder: commentary first, then play area */
+   /* Commentary first, then play area */
    .sidebar {
       width: 100%;
       display: contents;

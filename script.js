@@ -16,6 +16,7 @@ const shopToggle = document.getElementById("shop-toggle")
 const shopClose = document.getElementById("shop-close")
 const shopRoot = document.getElementById("shop-root")
 const shopOverlay = document.getElementById("shop-overlay")
+const shopBadge = document.getElementById("shop-badge")
 
 // Game State
 let counter = 0
@@ -392,6 +393,29 @@ function calculateMultiplier() {
    return mult
 }
 
+function countAffordableUpgrades() {
+   let count = 0
+   for (const category of Object.values(upgrades)) {
+      for (const upgrade of category) {
+         if (upgrade.level < upgrade.maxLevel && frustration >= getUpgradeCost(upgrade)) {
+            count++
+         }
+      }
+   }
+   return count
+}
+
+function updateShopBadge() {
+   const count = countAffordableUpgrades()
+   if (count > 0) {
+      shopBadge.textContent = count
+      shopBadge.classList.add("has-purchases")
+   } else {
+      shopBadge.textContent = ""
+      shopBadge.classList.remove("has-purchases")
+   }
+}
+
 function updateUI() {
    counterElement.textContent = counter
    lifetimeCounterElement.textContent = lifetimeCounter
@@ -399,6 +423,7 @@ function updateUI() {
    multiplierElement.textContent = multiplier.toFixed(1)
    renderShop()
    applyUpgradeEffects()
+   updateShopBadge()
 }
 
 
