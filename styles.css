@@ -328,14 +328,6 @@ main {
    flex-shrink: 0;
 }
 
-.chat__header {
-   padding: 0.5rem 0.75rem;
-   font-size: 0.8rem;
-   font-weight: bold;
-   border-bottom: 1px solid #eee;
-   color: #666;
-}
-
 .chat__messages {
    flex: 1;
    overflow-y: auto;
