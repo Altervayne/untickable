@@ -12,6 +12,10 @@ const particlesContainer = document.getElementById("particles")
 const chatMessages = document.getElementById("chat-messages")
 const resetBtn = document.getElementById("reset-btn")
 const resetAllBtn = document.getElementById("reset-all-btn")
+const shopToggle = document.getElementById("shop-toggle")
+const shopClose = document.getElementById("shop-close")
+const shopRoot = document.getElementById("shop-root")
+const shopOverlay = document.getElementById("shop-overlay")
 
 // Game State
 let counter = 0
@@ -913,6 +917,22 @@ function init() {
    playRoot.addEventListener("mousemove", handleMouseMove)
    resetBtn.addEventListener("click", resetGame)
    resetAllBtn.addEventListener("click", resetAllData)
+
+   // Mobile shop toggle
+   shopToggle.addEventListener("click", () => {
+      shopRoot.classList.add("shop--open")
+      shopOverlay.classList.add("shop--open")
+   })
+
+   shopClose.addEventListener("click", () => {
+      shopRoot.classList.remove("shop--open")
+      shopOverlay.classList.remove("shop--open")
+   })
+
+   shopOverlay.addEventListener("click", () => {
+      shopRoot.classList.remove("shop--open")
+      shopOverlay.classList.remove("shop--open")
+   })
 
    // Prevent checkbox from ever being checked
    checkbox.addEventListener("click", (e) => {
