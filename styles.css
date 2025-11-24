@@ -542,8 +542,8 @@ main {
    .chat__root {
       order: -1;
       height: auto;
-      min-height: 100px;
-      max-height: 120px;
+      min-height: 150px;
+      max-height: 200px;
       flex-shrink: 0;
    }
 
@@ -596,6 +596,7 @@ main {
 /* Responsive - Small mobile */
 @media (max-width: 480px) {
    .chat__root {
-      max-height: 100px;
+      min-height: 120px;
+      max-height: 150px;
    }
 }

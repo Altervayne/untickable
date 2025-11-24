@@ -599,6 +599,49 @@ function handlePlayAreaClick(event) {
    saveGame()
 }
 
+// Mobile detection
+function isTouchDevice() {
+   return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+}
+
+// Mobile Fidget Effect (Coward upgrade on touch devices)
+let fidgetInterval = null
+function startFidgetEffect() {
+   if (fidgetInterval) clearInterval(fidgetInterval)
+
+   const cowardLevel = getUpgradeLevel("coward")
+   if (cowardLevel === 0 || !isTouchDevice()) return
+
+   // Steady hand reduces fidget frequency
+   const steadyLevel = getUpgradeLevel("steady")
+   const caffeinatedLevel = getUpgradeLevel("caffeinated")
+
+   // Base interval: 2s at level 1, down to 0.8s at level 5
+   const baseInterval = Math.max(800, 2000 - (cowardLevel * 240))
+   const interval = baseInterval + (steadyLevel * 300)
+
+   fidgetInterval = setInterval(() => {
+      const playRect = playRoot.getBoundingClientRect()
+      const containerX = parseFloat(checkboxContainer.style.left) || 0
+      const containerY = parseFloat(checkboxContainer.style.top) || 0
+
+      // Random direction
+      const angle = Math.random() * Math.PI * 2
+      const baseMoveDistance = 40 + (cowardLevel * 20)
+      const moveDistance = baseMoveDistance + (caffeinatedLevel * 15) - (steadyLevel * 10)
+
+      let newX = containerX + Math.cos(angle) * moveDistance
+      let newY = containerY + Math.sin(angle) * moveDistance
+
+      // Clamp to bounds
+      const boxSize = getCheckboxSize()
+      newX = Math.max(5, Math.min(playRect.width - boxSize - 5, newX))
+      newY = Math.max(5, Math.min(playRect.height - boxSize - 5, newY))
+
+      setCheckboxPosition({ x: newX, y: newY })
+   }, interval)
+}
+
 // Hover Evasion (Coward upgrade)
 let lastEvadeTime = 0
 function handleMouseMove(event) {
@@ -710,6 +753,7 @@ function applyUpgradeEffects() {
 
    startInvisibleEffect()
    startQuantumEffect()
+   startFidgetEffect()
 }
 
 // Shop Rendering
@@ -809,8 +853,10 @@ function resetGame() {
    // Clear intervals
    if (invisibleInterval) clearInterval(invisibleInterval)
    if (quantumInterval) clearInterval(quantumInterval)
+   if (fidgetInterval) clearInterval(fidgetInterval)
    invisibleInterval = null
    quantumInterval = null
+   fidgetInterval = null
 
    // Reset checkbox appearance
    checkbox.style.opacity = 1
@@ -840,8 +886,10 @@ function resetAllData() {
    // Clear intervals
    if (invisibleInterval) clearInterval(invisibleInterval)
    if (quantumInterval) clearInterval(quantumInterval)
+   if (fidgetInterval) clearInterval(fidgetInterval)
    invisibleInterval = null
    quantumInterval = null
+   fidgetInterval = null
 
    // Reset checkbox appearance
    checkbox.style.opacity = 1
