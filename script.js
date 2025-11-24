@@ -39,8 +39,8 @@ const upgrades = {
       },
       {
          id: "coward",
-         name: "Coward",
-         desc: "Checkbox runs from cursor",
+         name: "Nervous",
+         desc: "Checkbox fidgets around",
          baseCost: 25,
          maxLevel: 5,
          level: 0,
@@ -281,7 +281,7 @@ const easterEggMessages = [
 const chatMilestones = {
    purchases: {
       tiny: "Smaller target. Just like real unsubscribe links.",
-      coward: "Now it runs from you. Like customer support.",
+      coward: "Now it fidgets nervously. Like loading screens at 99%.",
       caffeinated: "Faster. More erratic. Like cookie consent redesigns.",
       earthquake: "Disorienting. Like a website after a UI update.",
       shy: "It shrinks away. Like your hope of opting out.",
@@ -629,13 +629,13 @@ function isTouchDevice() {
    return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
 }
 
-// Mobile Fidget Effect (Coward upgrade on touch devices)
+// Fidget Effect (Coward upgrade - replaces old hover-flee behavior)
 let fidgetInterval = null
 function startFidgetEffect() {
    if (fidgetInterval) clearInterval(fidgetInterval)
 
    const cowardLevel = getUpgradeLevel("coward")
-   if (cowardLevel === 0 || !isTouchDevice()) return
+   if (cowardLevel === 0) return
 
    // Steady hand reduces fidget frequency
    const steadyLevel = getUpgradeLevel("steady")
@@ -667,67 +667,55 @@ function startFidgetEffect() {
    }, interval)
 }
 
-// Hover Evasion (Coward upgrade)
-let lastEvadeTime = 0
-function handleMouseMove(event) {
-   const cowardLevel = getUpgradeLevel("coward")
-   if (cowardLevel === 0) return
+// Shy Pulse Effect (for touch devices)
+let shyPulseInterval = null
+function startShyPulseEffect() {
+   if (shyPulseInterval) clearInterval(shyPulseInterval)
 
-   const now = Date.now()
-   if (now - lastEvadeTime < 100) return // Throttle
+   const shyLevel = getUpgradeLevel("shy")
+   if (shyLevel === 0 || !isTouchDevice()) return
+
+   // Pulse speed increases with level
+   const pulseSpeed = Math.max(800, 2000 - (shyLevel * 240))
+
+   let growing = false
+   shyPulseInterval = setInterval(() => {
+      const baseSize = getCheckboxSize()
+      const minScale = Math.max(0.2, 1 - (shyLevel * 0.15))
+      const minSize = baseSize * minScale
+
+      growing = !growing
+      const targetSize = growing ? baseSize : minSize
+
+      checkbox.style.width = targetSize + "px"
+      checkbox.style.height = targetSize + "px"
+   }, pulseSpeed)
+}
+
+// Hover Effects (Shy upgrade - desktop only)
+function handleMouseMove(event) {
+   // Shy upgrade - shrink based on distance
+   const shyLevel = getUpgradeLevel("shy")
+   if (shyLevel === 0 || isTouchDevice()) return
 
    const checkboxRect = checkbox.getBoundingClientRect()
-   const playRect = playRoot.getBoundingClientRect()
    const boxCenterX = checkboxRect.left + checkboxRect.width / 2
    const boxCenterY = checkboxRect.top + checkboxRect.height / 2
 
    const distance = Math.hypot(event.clientX - boxCenterX, event.clientY - boxCenterY)
 
-   // Steady hand reduces evasion distance
-   const steadyLevel = getUpgradeLevel("steady")
-   const baseEvadeDistance = 80 + (cowardLevel * 20)
-   const evadeDistance = Math.max(40, baseEvadeDistance - (steadyLevel * 15))
+   const baseSize = getCheckboxSize()
+   const minScale = Math.max(0.2, 1 - (shyLevel * 0.15))
+   const minSize = baseSize * minScale
+   const shrinkStart = 150 + (shyLevel * 30)
 
-   if (distance < evadeDistance) {
-      lastEvadeTime = now
-
-      // Calculate direction away from cursor
-      const angle = Math.atan2(boxCenterY - event.clientY, boxCenterX - event.clientX)
-      const caffeinatedLevel = getUpgradeLevel("caffeinated")
-      const baseMoveDistance = 60 + (cowardLevel * 15)
-      const moveDistance = baseMoveDistance + (caffeinatedLevel * 25) - (steadyLevel * 10)
-
-      // Get current container position (what we actually set)
-      const containerX = parseFloat(checkboxContainer.style.left) || 0
-      const containerY = parseFloat(checkboxContainer.style.top) || 0
-
-      let newX = containerX + Math.cos(angle) * moveDistance
-      let newY = containerY + Math.sin(angle) * moveDistance
-
-      // Clamp to bounds
-      const boxSize = getCheckboxSize()
-      newX = Math.max(5, Math.min(playRect.width - boxSize - 5, newX))
-      newY = Math.max(5, Math.min(playRect.height - boxSize - 5, newY))
-
-      setCheckboxPosition({ x: newX, y: newY })
-   }
-
-   // Shy upgrade - shrink based on distance
-   const shyLevel = getUpgradeLevel("shy")
-   if (shyLevel > 0) {
-      const baseSize = getCheckboxSize()
-      const minScale = Math.max(0.2, 1 - (shyLevel * 0.15))
-      const minSize = baseSize * minScale
-      const shrinkStart = 150 + (shyLevel * 30)
-
-      if (distance < shrinkStart) {
-         const scale = minSize + (baseSize - minSize) * (distance / shrinkStart)
-         checkbox.style.width = scale + "px"
-         checkbox.style.height = scale + "px"
-      } else {
-         checkbox.style.width = baseSize + "px"
-         checkbox.style.height = baseSize + "px"
-      }
+   if (distance < shrinkStart) {
+      const scale = minSize + (baseSize - minSize) * (distance / shrinkStart)
+      checkbox.style.width = scale + "px"
+      checkbox.style.height = scale + "px"
+   } else {
+      checkbox.style.width = baseSize + "px"
+      checkbox.style.height = baseSize + "px"
    }
 }
 
@@ -779,6 +767,7 @@ function applyUpgradeEffects() {
    startInvisibleEffect()
    startQuantumEffect()
    startFidgetEffect()
+   startShyPulseEffect()
 }
 
 // Shop Rendering
@@ -879,9 +868,11 @@ function resetGame() {
    if (invisibleInterval) clearInterval(invisibleInterval)
    if (quantumInterval) clearInterval(quantumInterval)
    if (fidgetInterval) clearInterval(fidgetInterval)
+   if (shyPulseInterval) clearInterval(shyPulseInterval)
    invisibleInterval = null
    quantumInterval = null
    fidgetInterval = null
+   shyPulseInterval = null
 
    // Reset checkbox appearance
    checkbox.style.opacity = 1
@@ -912,9 +903,11 @@ function resetAllData() {
    if (invisibleInterval) clearInterval(invisibleInterval)
    if (quantumInterval) clearInterval(quantumInterval)
    if (fidgetInterval) clearInterval(fidgetInterval)
+   if (shyPulseInterval) clearInterval(shyPulseInterval)
    invisibleInterval = null
    quantumInterval = null
    fidgetInterval = null
+   shyPulseInterval = null
 
    // Reset checkbox appearance
    checkbox.style.opacity = 1
